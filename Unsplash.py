@@ -1,4 +1,3 @@
-
 import requests
 import json
 import os
@@ -8,17 +7,20 @@ from pathlib import Path
 
 class Unsplash():
     url = "https://api.unsplash.com/"
-    acceskey = ""
     headers = {}
     photoUrl = ''
     photoid = ''
     photoFile = ''
     filepath =''
+    background_commands = {
+        'mate': 'gsettings set org.mate.background picture-filename ',
+        'gnome': 'gsettings set org.gnome.desktop.background picture-uri file://'
+    }
 
-    def __init__(self, parameter_list):
-        self.headers = {"Authorization": "Client-ID "+self.acceskey}
+    def __init__(self, access_key):
+        self.headers = {"Authorization": "Client-ID " + access_key}
 
-    def getRandom(self, parameter_list):
+    def get_random_image(self):
         url = self.url+"photos/random"
         r = requests.get(url, headers=self.headers)
         resp = r.json()
@@ -32,9 +34,28 @@ class Unsplash():
         print(self.filepath)
         self.photoFile = open(self.filepath,"w+")
         r = urllib.request.urlretrieve(self.photoUrl,self.filepath )
-    
-    def changeBackground(self):
+
+    def change_background(self):
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.save_image())
-        s = os.system("gsettings set org.gnome.desktop.background picture-uri "+self.filepath)
-        print("gsettings set org.gnome.desktop.background picture-uri "+self.filepath)
+        background_command = self.get_background_command()
+        s = os.system(background_command + self.filepath)
+        print(background_command + self.filepath)
+
+    def get_background_command(self):
+        uses_gnome_command = ['budgie-desktop']
+        desktop_environment = os.environ['DESKTOP_SESSION'].lower()
+
+        if desktop_environment in self.background_commands:
+            command = self.background_commands[desktop_environment]
+        elif desktop_environment in uses_gnome_command:
+            command = self.background_commands['gnome']
+        else:
+            raise Exception('Sorry, your desktop environment is not supported currently.')
+
+        return command
+
+    def set_random_background(self):
+        self.get_random_image()
+        self.save_image()
+        self.change_background()
