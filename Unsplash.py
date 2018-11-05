@@ -22,11 +22,8 @@ class Unsplash():
         self.headers = {"Authorization": "Client-ID " + access_key}
 
     def get_random_image(self):
-        self.createUrl()
-        print(self.url)
         r = requests.get(self.url, headers=self.headers)
         resp = r.json()
-        print(resp)
         self.photoUrl = resp['urls']['full']
         self.photoid = resp['id']
 
@@ -42,12 +39,10 @@ class Unsplash():
         loop.run_until_complete(self.save_image())
         background_command = self.get_background_command()
         s = os.system(background_command + self.filepath)
-        print(background_command + self.filepath)
 
     def get_background_command(self):
         uses_gnome_command = ['budgie-desktop']
         desktop_environment = os.environ['DESKTOP_SESSION'].lower()
-
         if desktop_environment in self.background_commands:
             command = self.background_commands[desktop_environment]
         elif desktop_environment in uses_gnome_command:
@@ -58,11 +53,16 @@ class Unsplash():
         return command
 
     def set_random_background(self):
+        """ Before get the image, the url has to be done """
+        self.create_url()
         self.get_random_image()
         self.save_image()
         self.change_background()
 
-    def createUrl(self):
+    def create_url(self):
         self.url = self.url+"photos/random"
         if self.tags is not None:
             self.url = self.url+"?query="+self.tags
+
+    def set_tags(self, tags = None):
+        self.tags = "+".join(tags)
