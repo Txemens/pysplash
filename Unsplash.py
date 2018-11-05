@@ -7,11 +7,12 @@ from pathlib import Path
 
 class Unsplash():
     url = "https://api.unsplash.com/"
-    headers = {}
-    photoUrl = ''
-    photoid = ''
-    photoFile = ''
-    filepath =''
+    headers = None
+    photoUrl = None
+    photoid = None
+    photoFile = None
+    filepath =None
+    tags = None
     background_commands = {
         'mate': 'gsettings set org.mate.background picture-filename ',
         'gnome': 'gsettings set org.gnome.desktop.background picture-uri file://'
@@ -21,9 +22,11 @@ class Unsplash():
         self.headers = {"Authorization": "Client-ID " + access_key}
 
     def get_random_image(self):
-        url = self.url+"photos/random"
-        r = requests.get(url, headers=self.headers)
+        self.createUrl()
+        print(self.url)
+        r = requests.get(self.url, headers=self.headers)
         resp = r.json()
+        print(resp)
         self.photoUrl = resp['urls']['full']
         self.photoid = resp['id']
 
@@ -31,7 +34,6 @@ class Unsplash():
     def save_image(self):
         home = str(Path.home())
         self.filepath =  home+'/Downloads/unsplash-'+self.photoid+'.jpg'
-        print(self.filepath)
         self.photoFile = open(self.filepath,"w+")
         r = urllib.request.urlretrieve(self.photoUrl,self.filepath )
 
@@ -59,3 +61,8 @@ class Unsplash():
         self.get_random_image()
         self.save_image()
         self.change_background()
+
+    def createUrl(self):
+        self.url = self.url+"photos/random"
+        if self.tags is not None:
+            self.url = self.url+"?query="+self.tags
