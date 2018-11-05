@@ -62,7 +62,7 @@ class Unsplash():
         self.save_image()
         self.change_background()
 
-    def createUrl(self):
+    def create_url(self):
         self.url = self.url+"photos/random"
         if self.tags is not None:
             self.url = self.url+"?query="+self.tags
