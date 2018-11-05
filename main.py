@@ -1,11 +1,9 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 
 from Unsplash import Unsplash
 
-splash = Unsplash('test')
+# insert your Unsplash Access Key below
+access_key = ''
 
-splash.getRandom("")
-
-splash.save_image()
-
-splash.changeBackground()
+splash = Unsplash(access_key)
+splash.set_random_background()
