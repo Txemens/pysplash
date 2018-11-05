@@ -22,6 +22,7 @@ class Unsplash():
         self.headers = {"Authorization": "Client-ID " + access_key}
 
     def get_random_image(self):
+        print(self.url)
         r = requests.get(self.url, headers=self.headers)
         resp = r.json()
         self.photoUrl = resp['urls']['full']
@@ -49,7 +50,7 @@ class Unsplash():
             command = self.background_commands['gnome']
         else:
             raise Exception('Sorry, your desktop environment is not supported currently.')
-
+        
         return command
 
     def set_random_background(self):
@@ -65,4 +66,13 @@ class Unsplash():
             self.url = self.url+"?query="+self.tags
 
     def set_tags(self, tags = None):
-        self.tags = "+".join(tags)
+        if tags is not None:
+            if isinstance(tags, str):
+                self.tags = tags
+            elif type(tags) is list:
+                l = len(tags)
+                if l > 1:
+                    self.tags = "+".join(tags)
+                elif l == 1:
+                    self.tags = tags[0]
+                
